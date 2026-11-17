@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GearLoop.Api.Data.Migrations
 {
     [DbContext(typeof(GearLoopDbContext))]
-    [Migration("20261117191325_InitialCreate")]
+    [Migration("20261117192909_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -148,8 +148,7 @@ namespace GearLoop.Api.Data.Migrations
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
                         .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<string>("SerialNumber")
                         .IsRequired()
@@ -258,8 +257,7 @@ namespace GearLoop.Api.Data.Migrations
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
                         .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
+                        .HasColumnType("varbinary(max)");
 
                     b.Property<DateOnly>("StartDate")
                         .HasColumnType("date");
