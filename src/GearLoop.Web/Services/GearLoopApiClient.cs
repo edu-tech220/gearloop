@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using GearLoop.Web.Dtos;
 
 namespace GearLoop.Web.Services;
@@ -9,7 +10,12 @@ namespace GearLoop.Web.Services;
 /// talks to the database directly - every read and write crosses this boundary.
 public class GearLoopApiClient
 {
-    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
+    // The Api serializes enums as strings (JsonStringEnumConverter); mirror that here or every
+    // ReservationDto.Status/WaitlistEntryDto.Status read throws a JsonException.
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
+    {
+        Converters = { new JsonStringEnumConverter() }
+    };
 
     private readonly HttpClient _http;
     private readonly IHttpContextAccessor _httpContextAccessor;
