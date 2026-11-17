@@ -1,0 +1,77 @@
+@page
+@model GearLoop.Web.Pages.Staff.IndexModel
+@using GearLoop.Web.Dtos
+@{
+    ViewData["Title"] = "Staff Desk";
+}
+
+<h1>Staff Desk</h1>
+
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+@if (Model.StatusMessage is not null)
+{
+    <div class="alert alert-success">@Model.StatusMessage</div>
+}
+
+<h2 class="h4 mt-4">Awaiting checkout</h2>
+@if (!Model.AwaitingCheckout.Any())
+{
+    <p class="text-muted">Nothing to check out right now.</p>
+}
+else
+{
+    <table class="table">
+        <thead><tr><th>#</th><th>Customer</th><th>Equipment</th><th>Branch</th><th>Dates</th><th></th></tr></thead>
+        <tbody>
+            @foreach (var r in Model.AwaitingCheckout)
+            {
+                <tr>
+                    <td>@r.Id</td>
+                    <td>@r.CustomerName</td>
+                    <td>@r.EquipmentModelName</td>
+                    <td>@r.BranchName</td>
+                    <td>@r.StartDate.ToString("d") &rarr; @r.EndDate.ToString("d")</td>
+                    <td>
+                        <form method="post" asp-page-handler="Checkout" asp-route-id="@r.Id">
+                            <button type="submit" class="btn btn-sm btn-primary">Check out</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<h2 class="h4 mt-4">Awaiting return</h2>
+@if (!Model.AwaitingReturn.Any())
+{
+    <p class="text-muted">Nothing checked out right now.</p>
+}
+else
+{
+    @foreach (var r in Model.AwaitingReturn)
+    {
+        <form method="post" asp-page-handler="Return" asp-route-id="@r.Id" class="row g-2 align-items-end border-bottom py-2">
+            <div class="col-auto">#@r.Id &mdash; @r.CustomerName &mdash; @r.EquipmentModelName (due @r.EndDate.ToString("d"))</div>
+            <div class="col-auto">
+                <label class="form-label mb-0">Return date</label>
+                <input type="date" name="actualReturnDate" class="form-control form-control-sm"
+                       value="@DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd")" required />
+            </div>
+            <div class="col-auto">
+                <label class="form-label mb-0">Condition</label>
+                <select name="condition" class="form-select form-select-sm">
+                    <option value="@UnitCondition.Good">Good</option>
+                    <option value="@UnitCondition.Fair">Fair</option>
+                    <option value="@UnitCondition.Damaged">Damaged</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-sm btn-primary">Return</button>
+            </div>
+        </form>
+    }
+}
