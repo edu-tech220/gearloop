@@ -112,7 +112,16 @@ public class ReservationService : IReservationService
 
         reservation.Status = ReservationStatus.Cancelled;
         reservation.CancelledAtUtc = _clock.UtcNow;
-        await _db.SaveChangesAsync(cancellationToken);
+        reservation.RowVersion = Guid.NewGuid().ToByteArray();
+
+        try
+        {
+            await _db.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new ConflictException("The reservation was modified concurrently. Please retry.");
+        }
 
         await PromoteWaitlistAsync(reservation.EquipmentModelId, reservation.BranchId, cancellationToken);
         return reservation;
@@ -145,9 +154,11 @@ public class ReservationService : IReservationService
             }
 
             unit.Status = UnitStatus.CheckedOut;
+            unit.RowVersion = Guid.NewGuid().ToByteArray();
             reservation.AssignedUnitId = unit.Id;
             reservation.Status = ReservationStatus.CheckedOut;
             reservation.CheckedOutAtUtc = _clock.UtcNow;
+            reservation.RowVersion = Guid.NewGuid().ToByteArray();
 
             try
             {
@@ -196,11 +207,13 @@ public class ReservationService : IReservationService
         reservation.ActualReturnDate = actualReturnDate;
         reservation.ReturnCondition = condition;
         reservation.ReturnedAtUtc = _clock.UtcNow;
+        reservation.RowVersion = Guid.NewGuid().ToByteArray();
 
         reservation.AssignedUnit.Condition = condition;
         reservation.AssignedUnit.Status = condition is UnitCondition.Damaged or UnitCondition.Retired
             ? UnitStatus.Maintenance
             : UnitStatus.Available;
+        reservation.AssignedUnit.RowVersion = Guid.NewGuid().ToByteArray();
 
         try
         {

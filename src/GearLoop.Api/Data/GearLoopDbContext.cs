@@ -41,7 +41,11 @@ public class GearLoopDbContext : DbContext
         {
             u.Property(x => x.SerialNumber).HasMaxLength(60).IsRequired();
             u.HasIndex(x => x.SerialNumber).IsUnique();
-            u.Property(x => x.RowVersion).IsRowVersion();
+
+            // App-managed concurrency token (not a database-generated rowversion) so the same
+            // model and application code behave identically on SQL Server and the SQLite
+            // provider used by the test suite.
+            u.Property(x => x.RowVersion).IsConcurrencyToken();
 
             u.HasOne(x => x.EquipmentModel)
                 .WithMany(m => m.Units)
@@ -66,7 +70,7 @@ public class GearLoopDbContext : DbContext
 
         modelBuilder.Entity<Reservation>(r =>
         {
-            r.Property(x => x.RowVersion).IsRowVersion();
+            r.Property(x => x.RowVersion).IsConcurrencyToken();
 
             r.HasOne(x => x.Customer)
                 .WithMany()

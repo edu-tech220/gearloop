@@ -72,7 +72,7 @@ namespace GearLoop.Api.Data.Migrations
                     SerialNumber = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
                     Condition = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
+                    RowVersion = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -148,7 +148,7 @@ namespace GearLoop.Api.Data.Migrations
                     CancelledAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
                     ActualReturnDate = table.Column<DateOnly>(type: "date", nullable: true),
                     ReturnCondition = table.Column<int>(type: "int", nullable: true),
-                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
+                    RowVersion = table.Column<byte[]>(type: "varbinary(max)", nullable: false)
                 },
                 constraints: table =>
                 {
