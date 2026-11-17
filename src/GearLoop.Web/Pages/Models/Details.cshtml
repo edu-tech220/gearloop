@@ -1,0 +1,65 @@
+@page "{id:int}"
+@model GearLoop.Web.Pages.Models.DetailsModel
+@{
+    ViewData["Title"] = Model.EquipmentModel.Name;
+}
+
+<h1>@Model.EquipmentModel.Name</h1>
+<h6 class="text-muted">@Model.EquipmentModel.Category</h6>
+<p>@Model.EquipmentModel.Description</p>
+<ul class="list-unstyled">
+    <li><strong>Daily rate:</strong> @Model.EquipmentModel.DailyRate.ToString("C")</li>
+    <li><strong>Security deposit:</strong> @Model.EquipmentModel.DepositAmount.ToString("C")</li>
+</ul>
+
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+@if (Model.InfoMessage is not null)
+{
+    <div class="alert alert-info">@Model.InfoMessage</div>
+}
+@if (Model.Availability is not null)
+{
+    <div class="alert @(Model.Availability.AvailableUnits > 0 ? "alert-success" : "alert-warning")">
+        @if (Model.Availability.AvailableUnits > 0)
+        {
+            <text>@Model.Availability.AvailableUnits unit(s) available for the selected dates.</text>
+        }
+        else
+        {
+            <text>No units available for the selected dates. You can join the waitlist below.</text>
+        }
+    </div>
+}
+
+<form method="post" class="row g-3">
+    <div class="col-md-4">
+        <label asp-for="Input.BranchId" class="form-label">Branch</label>
+        <select asp-for="Input.BranchId" class="form-select">
+            @foreach (var branch in Model.Branches)
+            {
+                <option value="@branch.Id">@branch.Name (@branch.City)</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Input.StartDate" class="form-label"></label>
+        <input asp-for="Input.StartDate" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <label asp-for="Input.EndDate" class="form-label"></label>
+        <input asp-for="Input.EndDate" class="form-control" />
+    </div>
+    <div class="col-12">
+        <div class="form-check">
+            <input asp-for="Input.JoinWaitlistIfUnavailable" class="form-check-input" />
+            <label asp-for="Input.JoinWaitlistIfUnavailable" class="form-check-label">Join the waitlist if no units are available</label>
+        </div>
+    </div>
+    <div class="col-12">
+        <button type="submit" asp-page-handler="CheckAvailability" class="btn btn-outline-secondary">Check availability</button>
+        <button type="submit" asp-page-handler="Reserve" class="btn btn-primary">Reserve</button>
+    </div>
+</form>
