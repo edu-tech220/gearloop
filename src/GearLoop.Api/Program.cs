@@ -77,13 +77,14 @@ builder.Services.AddCors(options =>
         policy.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod());
 });
 
+var authRateLimit = builder.Configuration.GetSection("RateLimiting:Auth");
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     options.AddFixedWindowLimiter("auth", limiterOptions =>
     {
-        limiterOptions.PermitLimit = 5;
-        limiterOptions.Window = TimeSpan.FromMinutes(1);
+        limiterOptions.PermitLimit = authRateLimit.GetValue<int?>("PermitLimit") ?? 5;
+        limiterOptions.Window = TimeSpan.FromSeconds(authRateLimit.GetValue<int?>("WindowSeconds") ?? 60);
         limiterOptions.QueueLimit = 0;
     });
 });
@@ -113,7 +114,18 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<GearLoopDbContext>();
-    db.Database.Migrate();
+
+    // Migrations are scaffolded against SQL Server; the SQLite provider used by the test suite
+    // builds its schema straight from the model instead of replaying SQL Server-specific DDL.
+    if (db.Database.ProviderName == "Microsoft.EntityFrameworkCore.Sqlite")
+    {
+        db.Database.EnsureCreated();
+    }
+    else
+    {
+        db.Database.Migrate();
+    }
+
     DbSeeder.Seed(db);
 }
 

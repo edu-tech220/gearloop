@@ -7,6 +7,8 @@ public static class DbSeeder
 {
     public const string DemoAdminEmail = "admin@gearloop.dev";
     public const string DemoAdminPassword = "Admin#2024";
+    public const string DemoStaffEmail = "staff@gearloop.dev";
+    public const string DemoStaffPassword = "Staff#2024";
 
     public static void Seed(GearLoopDbContext db)
     {
@@ -23,8 +25,8 @@ public static class DbSeeder
             db.Users.Add(new AppUser
             {
                 FullName = "Branch Staff",
-                Email = "staff@gearloop.dev",
-                PasswordHash = PasswordHasher.Hash("Staff#2024"),
+                Email = DemoStaffEmail,
+                PasswordHash = PasswordHasher.Hash(DemoStaffPassword),
                 Role = UserRole.Staff,
                 CreatedAtUtc = DateTime.UtcNow
             });
