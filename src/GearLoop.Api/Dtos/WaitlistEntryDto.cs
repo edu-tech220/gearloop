@@ -1,3 +1,5 @@
+using GearLoop.Api.Domain;
+
 namespace GearLoop.Api.Dtos;
 
 public record WaitlistEntryDto(
@@ -10,6 +12,6 @@ public record WaitlistEntryDto(
     string BranchName,
     DateOnly RequestedStart,
     DateOnly RequestedEnd,
-    string Status,
+    WaitlistStatus Status,
     DateTime CreatedAtUtc,
     int? PromotedReservationId);

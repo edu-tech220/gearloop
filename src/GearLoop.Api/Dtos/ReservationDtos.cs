@@ -34,7 +34,7 @@ public record ReservationDto(
     string BranchName,
     DateOnly StartDate,
     DateOnly EndDate,
-    string Status,
+    ReservationStatus Status,
     int? AssignedUnitId,
     DateTime CreatedAtUtc,
     RentalChargeDto? Charge);
