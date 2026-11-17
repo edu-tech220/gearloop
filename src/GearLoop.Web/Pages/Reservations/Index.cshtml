@@ -1,0 +1,53 @@
+@page
+@model GearLoop.Web.Pages.Reservations.IndexModel
+@using GearLoop.Web.Dtos
+@{
+    ViewData["Title"] = "My Reservations";
+}
+
+<h1>My Reservations</h1>
+
+@if (Model.ErrorMessage is not null)
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
+@if (!Model.Reservations.Items.Any())
+{
+    <p>You have no reservations yet. <a asp-page="/Index">Browse equipment</a> to get started.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Equipment</th>
+                <th>Branch</th>
+                <th>Dates</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model.Reservations.Items)
+            {
+                <tr>
+                    <td>@r.EquipmentModelName</td>
+                    <td>@r.BranchName</td>
+                    <td>@r.StartDate.ToString("d") &rarr; @r.EndDate.ToString("d")</td>
+                    <td><span class="badge bg-secondary">@r.Status</span></td>
+                    <td>@(r.Charge?.TotalAmount.ToString("C") ?? "-")</td>
+                    <td>
+                        @if (r.Status == ReservationStatus.Confirmed)
+                        {
+                            <form method="post" asp-page-handler="Cancel" asp-route-id="@r.Id">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
+                            </form>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

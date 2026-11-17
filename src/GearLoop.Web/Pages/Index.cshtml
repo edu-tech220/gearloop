@@ -1,10 +1,52 @@
-﻿@page
+@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Browse Equipment";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<h1>Browse Equipment</h1>
+<p class="text-muted">Outdoor and photography gear, ready to rent by the day.</p>
+
+<form method="get" class="row g-2 mb-4">
+    <div class="col-auto">
+        <select name="Category" class="form-select" onchange="this.form.submit()">
+            <option value="">All categories</option>
+            <option value="Photography" selected="@(Model.Category == "Photography")">Photography</option>
+            <option value="Outdoor" selected="@(Model.Category == "Outdoor")">Outdoor</option>
+        </select>
+    </div>
+</form>
+
+@if (!Model.Models.Items.Any())
+{
+    <p>No equipment models match this filter.</p>
+}
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var item in Model.Models.Items)
+    {
+        <div class="col">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">@item.Name</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">@item.Category</h6>
+                    <p class="card-text">@item.Description</p>
+                    <p class="card-text"><strong>@item.DailyRate.ToString("C")</strong> / day &middot; deposit @item.DepositAmount.ToString("C")</p>
+                    <a asp-page="/Models/Details" asp-route-id="@item.Id" class="btn btn-primary">View &amp; reserve</a>
+                </div>
+            </div>
+        </div>
+    }
 </div>
+
+<nav class="mt-4">
+    <ul class="pagination">
+        <li class="page-item @(Model.PageNumber <= 1 ? "disabled" : "")">
+            <a class="page-link" asp-page="/Index" asp-route-category="@Model.Category" asp-route-pageNumber="@(Model.PageNumber - 1)">Previous</a>
+        </li>
+        <li class="page-item disabled"><span class="page-link">Page @Model.PageNumber of @Math.Max(1, Model.Models.TotalPages)</span></li>
+        <li class="page-item @(Model.PageNumber >= Model.Models.TotalPages ? "disabled" : "")">
+            <a class="page-link" asp-page="/Index" asp-route-category="@Model.Category" asp-route-pageNumber="@(Model.PageNumber + 1)">Next</a>
+        </li>
+    </ul>
+</nav>

@@ -1,0 +1,48 @@
+@page
+@model GearLoop.Web.Pages.Admin.ReservationsModel
+@using GearLoop.Web.Dtos
+@{
+    ViewData["Title"] = "All Reservations";
+}
+
+<h1>All Reservations</h1>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <select name="status" class="form-select" onchange="this.form.submit()">
+            <option value="">All statuses</option>
+            @foreach (var value in Enum.GetValues<ReservationStatus>())
+            {
+                <option value="@value" selected="@(Model.Status == value)">@value</option>
+            }
+        </select>
+    </div>
+</form>
+
+@if (!Model.Reservations.Items.Any())
+{
+    <p>No reservations match this filter.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr><th>#</th><th>Customer</th><th>Equipment</th><th>Branch</th><th>Dates</th><th>Status</th><th>Total</th></tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model.Reservations.Items)
+            {
+                <tr>
+                    <td>@r.Id</td>
+                    <td>@r.CustomerName</td>
+                    <td>@r.EquipmentModelName</td>
+                    <td>@r.BranchName</td>
+                    <td>@r.StartDate.ToString("d") &rarr; @r.EndDate.ToString("d")</td>
+                    <td><span class="badge bg-secondary">@r.Status</span></td>
+                    <td>@(r.Charge?.TotalAmount.ToString("C") ?? "-")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <p class="text-muted">Page @Model.Reservations.Page of @Math.Max(1, Model.Reservations.TotalPages) &middot; @Model.Reservations.TotalCount total</p>
+}
