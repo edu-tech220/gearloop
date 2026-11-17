@@ -120,6 +120,14 @@ through a typed `HttpClient`.
 
 Swagger UI is available at `/swagger` when the Api runs in Development.
 
+## Project layout
+
+```
+src/GearLoop.Api/   Web API: domain, EF Core, services, controllers, migrations
+src/GearLoop.Web/    Razor Pages frontend, talks to the Api via GearLoopApiClient
+tests/GearLoop.Api.Tests/   xUnit: unit, service and WebApplicationFactory integration tests
+```
+
 ## Running it
 
 ### Docker Compose (Api + Web + SQL Server)
