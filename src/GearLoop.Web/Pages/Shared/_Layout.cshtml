@@ -37,7 +37,10 @@
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-page="/Admin/Reservations">Admin</a>
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Admin/Reservations">All Reservations</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-page="/Admin/Waitlist">Waitlist</a>
                             </li>
                         }
                     </ul>
